@@ -2,6 +2,8 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Silver Butterfly</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
@@ -13,17 +15,17 @@
     --ink:#18181b; --sub:#71717a; --chip:#f1f2f4;
   }
   *{box-sizing:border-box;margin:0}
-  html,body{height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#fff 40%,#f3f4f6 100%);
+  html,body{height:100%;overflow:hidden;background:#fff;
     font-family:"Pretendard",-apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
     letter-spacing:var(--ls);line-height:var(--lh);color:var(--ink)}
   button{font-family:inherit;letter-spacing:inherit;line-height:inherit}
   canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
   canvas#gl:active{cursor:grabbing}
   svg#lines{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
-  svg#lines path{fill:none;stroke:#9ca0a8;stroke-width:1}
-  svg#lines .dot{fill:#27272a}
-  svg#lines .ring{fill:rgba(255,255,255,.35);stroke:#3f3f46;stroke-width:1;pointer-events:all;cursor:pointer}
-  svg#lines .pulse{fill:none;stroke:rgba(63,63,70,.45);stroke-width:1;transform-box:fill-box;transform-origin:center;
+  svg#lines path{fill:none;stroke:#9a9a9a;stroke-width:1}
+  svg#lines .dot{fill:#262626}
+  svg#lines .ring{fill:rgba(255,255,255,.35);stroke:#404040;stroke-width:1;pointer-events:all;cursor:pointer}
+  svg#lines .pulse{fill:none;stroke:rgba(64,64,64,.45);stroke-width:1;transform-box:fill-box;transform-origin:center;
     animation:pulse 2.4s ease-out infinite}
   @keyframes pulse{from{transform:scale(1);opacity:.9}to{transform:scale(2.3);opacity:0}}
   .hsbtn{position:fixed;left:0;top:0;border:1px solid #d4d4d8;background:rgba(255,255,255,.9);color:#27272a;
@@ -59,14 +61,13 @@
   .card b{font-weight:700}
   .card>:last-child{margin-bottom:0}
   @media (prefers-reduced-motion:reduce){*{animation:none!important}}
-.card{width:300px;max-width:100%;font-size:8.5px}
-.tag{padding:0.2px 2.5px}
 </style>
 </head>
 <body>
 <canvas id="gl"></canvas>
 <svg id="lines"></svg>
 <div id="labels"></div>
+<div class="hint">드래그해서 돌려보고, 동그라미나 이름을 눌러보세요</div>
 
 <div class="overlay" id="overlay" role="dialog" aria-modal="true">
   <div class="card" id="card"></div>
@@ -76,49 +77,54 @@
 <script>
 /* ============ 버튼 이름 + 팝업 글 (글 생성기에서 복사해 이 블록을 통째로 교체하세요) ============ */
 const HOTSPOTS = [
-  { id:"wingL", label:"⑴ info", side:-1, dy:-50,
+  { id:"wingL", label:"윗날개", side:-1, dy:-50,
     html:`
-<div class="meta"><span>( <i>info</i> )</span></div>
-<div class="id-row"><span class="tag">Eternity</span> · 20⁺</div>
-<div class="id-row">ㄴ ♥  블랙배저 · <b>이예현</b></div>
+<div class="meta"><span>(personality)</span></div>
+<div class="id-row"><span class="tag">Yoonseul</span> · 성인 女 · only cbc</div>
+<div class="id-row">ㄴ ★ <span class="tag">main @Ko2</span> · EOC · VAPOR</div>
+<div class="label">PASSWORD</div>
+<p class="ln">ㄴ sub acc MM/DD 네 글자</p>
 <div class="label">ACCOUNTS</div>
-<p class="ln">backup acc (@reqhycine)</p>
+<p class="ln">backup acc (@tensicore)</p>
+<p class="ln">sub (@moonhajin1st)</p>
 <hr>
-<p class="para"><span class="n">(1)</span> 반 이입 온리 동담 거부 성향으로 동장르 포함 상호 名1 필수로 요합니다 겹드림 자연 발생 시 친분 무관 제 쪽 팔로우 재고해 주세요 동담 발견 시 <b>사적 감정 일체 없는 B</b>로 대응하며 관련된 모든 종류의 컨택 받지 않습니다</p>
-<div class="id-row"><span class="tag">+ 캐릭터 특성상 아동 폭력과 같은 트리거 소재 언급이 존재할 가능성 있습니다</span></div>
-<p class="para"><span class="n">(2)</span> 강박적으로 멘션이나 트윗 삭제하곤 합니다 관련 행동에 악의는 전혀 존재하지 않아요 맞구독 형태의 맞팔로우 지향하며 교류 중요시 여기실 경우 연결 거부해요 또한 생각해 주시는 마음은 감사하나 마음 테러 내키지 않습니다</p>
-<p class="para"><span class="n">(3)</span> 논 커플링이 아닌 이예현 연성 유입하지 말아주세요 특히 화살표 구분없이 승현 → 윤 ← 예현 구조 동인 정말 싫어합니다⋯⋯ NL 성향으로 블랙배저 내 모든 캐릭터 디폴트 논 로맨스 최대 조합으로 소비해요 <span class="g">(이예현 CP 아니면 흐린 눈)</span></p>
-<p class="para"><span class="n">(4)</span> 개인 봇 언급 잦습니다 해당 문화에 부정적인 인식 가지고 있으실 경우 팔로우 X</p>
+<p class="para"><span class="n">(1)</span> 캐릭터 특성상 DV · 가스라이팅 · OD 이야기가 많습니다. 별도 쿠션은 깔고 올리지 않으니 불편한 분들은 팔로우 재고 부탁드립니다.</p>
+<div class="id-row"><span class="tag">+ 찐근친 페어입니다 지뢰이신 분들은 참고 부탁드립니다</span></div>
+<p class="para"><span class="n">(2)</span> 맞구독 형태 마음 위주 교류. 교류에 예민한 편도 아니며, 멘션도 잘 달지 않습니다. 트위터 알림이 안 울려 멘션을 종종 씹을 때도 있는데 고의가 아니라는 것만 알아주시면 감사하겠습니다...</p>
+<p class="para"><span class="n">(3)</span> 편하게 쓰는 계정입니다. 가끔씩 워딩이 거칠어질 때가 있습니다. ㅠ.ㅠ 워딩에 불쾌함을 느끼시면 편하게 정리 부탁드립니다!</p>
+<p class="para"><span class="n">(4)</span> 배려 필수로 안 해 주셔도 됩니다. 제 쪽은 최근에 성향이 좀 바뀌어 최대한 1-2d 유지 중입니다. ^_^♥ 제 쪽은 잦은 유입 · 드림 지우기만 안 해 주신다면 상관없습니다.</p>
     ` },
-  { id:"wingLo", label:"⑵ caution", side:-1, dy:60,
+  { id:"wingLo", label:"아랫날개", side:-1, dy:60,
     html:`
-<div class="meta"><span>( <i>caution</i> )</span></div>
-<div class="id-row"><span class="tag">NG</span></div>
-<div class="two"><div><div class="label">CP</div><p class="ln">ㄴ 이예현 관련 모든 동인 커플링</p><p class="ln">ㄴ <b>윤예 및 예현른</b></p></div><div><div class="label">TIMELINE</div><p class="ln">ㄴ 잦은 수동공격</p><p class="ln">ㄴ 캐릭터 선점용 드림</p></div></div>
+<div class="meta"><span>(caution)</span></div>
+<div class="id-row"><span class="tag">NG</span> · 이것만은 피해 주세요</div>
+<div class="two"><div><div class="label">PERSON</div><p class="ln">ㄴ 미성년자</p><p class="ln">ㄴ 미실장 캐릭터 선점</p></div><div><div class="label">TIMELINE</div><p class="ln">ㄴ 잦은 마플 유입</p><p class="ln">ㄴ 타임라인 내 수동공격</p></div></div>
 <hr>
-<p class="para"><span class="n">(1)</span> 상기 내용 외에는 팔안굽 성향으로 보편적인 도덕 윤리를 위반하는 수준이 아닐 경우 대부분 흐린 눈 합니다 <b>그러나 반복될 경우 불시에 정리할 가능성 존재합니다</b></p>
-<p class="para"><span class="n">(2)</span> 별개로 AI 채팅 및 그림 소비러 내지는 이에 연관된 분과는 어떠한 이유가 있어도 연결하지 않습니다 추후에 숨기다 들키시면 블락으로 대응합니다</p>
+<p class="para"><span class="n">(1)</span> 크게 예민한 성향도 아니며, 타임라인 내 찍먹 정도는 가볍게 스루 가능합니다. 다만 정실 발현하신다면 저를 정리해 주셨으면 합니다....</p>
+<p class="para"><span class="n">(2)</span> 또한 타임라인 내에 친한 온리 분이 계신다면 그 분과 저를 위해서 제 쪽을 정리해 주시거나 팔로우 걸지 말아 주세요. 상호 간 예의가 아니라 생각합니다.</p>
     ` },
-  { id:"wingR", label:"⑶ 名1", side:1, dy:-40,
+  { id:"wingR", label:"뒷날개", side:1, dy:-40,
     html:`
-<div class="meta"><span>( <i>名1</i>  )</span></div>
-<div class="id-row"><span class="tag">LIST</span> 상기 캐릭터 드림러 더 이상 받지 않으며 자연 발생 시 후발주자 FF 정리해요</div>
+<div class="meta"><span>(history)</span></div>
+<div class="id-row"><span class="tag">LIST</span> · 받지 않는 캐릭터</div>
 <div class="label">NOTICE</div>
-<p class="ln"><span class="tag">배경</span> 캐릭터 발생 시 친분 무관 블락</p>
+<p class="ln">애정하는 분들이 있어 해당 캐릭터들은 메인 · 서브 무관하게 더 이상 받지 않습니다.</p>
+<div class="label">MARKED</div>
+<p class="ln"><span class="tag">칠해져있는</span> 캐릭터는 타임라인 내 자연발생 시 바로 정리합니다.</p>
 <hr>
-<p class="ln"><b>블랙배저</b> · <span class="tag">리카르도 소르디</span>, <b>최윤</b></p>
-<p class="ln"><b>마법명가 차남으로 살아남는 법 </b>· 아델베르트 호엔촐레른</p>
-<p class="ln"><b>괴담에 떨어져도 출근을 해야 하는구나</b> · 김솔음, 최 요원</p>
-<p class="ln"><b>망나니 PD 아이돌로 살아남기</b> · 서호윤</p>
-<p class="ln"><b>어린 신인데 키워주시죠</b> · 한고요</p>
-<p class="ln"><b>あんさんぶるスターズ！！</b>· 氷鷹 北斗</p>
-<p class="ln"><b>プロセカ</b> · 暁山 瑞希</p>
+<p class="ln"><b>SERAPHIX</b> <span class="g">@toyoman</span> · <span class="tag">캐리온</span>, 에테르, 어비스</p>
+<p class="ln"><b>SERAPHIX</b> <span class="g">@miyaman</span> · 넵튠</p>
+<p class="ln"><b>ARCH</b> <span class="g">@Cherrymango</span> · 신드롬, 산타, 해일</p>
+<p class="ln"><b>PRISM</b> <span class="g">@ny4ngny4ng00</span> · 네벨</p>
+<p class="ln"><b>FEARLESS</b> <span class="g">@0104</span> · 바이퍼, 도브</p>
+<p class="ln"><b>ETC</b> · 진해령</p>
     ` },
-  { id:"ant", label:"⑷ fyi", side:1, dy:50,
+  { id:"ant", label:"더듬이", side:1, dy:50,
     html:`
-<div class="meta"><span>( <i>fyi</i>  )</span></div>
-<div class="id-row">좋아하는 것에 에너지를 쏟는 편이라 타임라인을 정독하기 어렵습니다 계옮이나 메인 드림 변경 시에는 직멘이나 디엠 필시적으로 부탁드립니다</div>
-<div class="id-row"><b>불특정 다수에게 노출될 만한 제 개인정보 공개적인 곳에서 언급하지 마세요</b></div>
+<div class="meta"><span>(extra)</span></div>
+<div class="id-row"><span class="tag">NOTE</span> · 내용을 입력해 주세요</div>
+<hr>
+<p class="para"><span class="n">(1)</span> 여기에 내용을 입력하세요.</p>
     ` }
 ];
 
@@ -127,7 +133,8 @@ const POSE = { yaw:-0.9, pitch:-0.2, roll:-0.45, fold:0.7 };
 
 /* ============ Three.js ============ */
 const canvas = document.getElementById("gl");
-const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
+renderer.setClearColor(0xffffff,1);        // 배경 순백 고정
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -141,8 +148,8 @@ const camera = new THREE.PerspectiveCamera(35,1,0.1,200);
   const env = new THREE.Scene();
   const c = document.createElement("canvas"); c.width=4; c.height=256;
   const g = c.getContext("2d"), gr = g.createLinearGradient(0,0,0,256);
-  gr.addColorStop(0,"#ffffff"); gr.addColorStop(.3,"#dfe4ee"); gr.addColorStop(.46,"#9aa3b5");
-  gr.addColorStop(.5,"#16181d"); gr.addColorStop(.62,"#4d5260"); gr.addColorStop(.8,"#aeb5c4"); gr.addColorStop(1,"#2c2f37");
+  gr.addColorStop(0,"#ffffff"); gr.addColorStop(.3,"#e2e2e2"); gr.addColorStop(.46,"#9c9c9c");
+  gr.addColorStop(.5,"#161616"); gr.addColorStop(.62,"#4d4d4d"); gr.addColorStop(.8,"#aeaeae"); gr.addColorStop(1,"#2c2c2c");
   g.fillStyle=gr; g.fillRect(0,0,4,256);
   const tex = new THREE.CanvasTexture(c); tex.encoding = THREE.sRGBEncoding;
   env.add(new THREE.Mesh(new THREE.SphereGeometry(50,32,16), new THREE.MeshBasicMaterial({map:tex,side:THREE.BackSide})));
@@ -204,10 +211,10 @@ function wingTextures(kind){
   m.save(); outline(m); m.clip();
   // 가장자리 어두운 띠
   const g1=m.createRadialGradient(O[0],O[1],maxR*.5,O[0],O[1],maxR);
-  g1.addColorStop(0,"rgba(40,44,52,0)"); g1.addColorStop(.62,"rgba(40,44,52,.03)"); g1.addColorStop(1,"rgba(24,26,32,.55)");
+  g1.addColorStop(0,"rgba(40,40,40,0)"); g1.addColorStop(.62,"rgba(40,40,40,.03)"); g1.addColorStop(1,"rgba(24,24,24,.55)");
   m.fillStyle=g1; m.fillRect(0,0,W,H);
   const g2=m.createRadialGradient(O[0],O[1],maxR*.86,O[0],O[1],maxR);
-  g2.addColorStop(0,"rgba(20,22,28,0)"); g2.addColorStop(1,"rgba(14,15,19,1)");
+  g2.addColorStop(0,"rgba(20,20,20,0)"); g2.addColorStop(1,"rgba(14,14,14,1)");
   m.restore();
   const map = new THREE.CanvasTexture(mc); map.encoding = THREE.sRGBEncoding; map.anisotropy = 8;
 
@@ -229,12 +236,12 @@ function wingTextures(kind){
 }
 
 const silverMat = t => new THREE.MeshPhysicalMaterial({
-  color:0xd8dce4, map:t.map, normalMap:t.normal, normalScale:new THREE.Vector2(1,1),
+  color:0xdcdcdc, map:t.map, normalMap:t.normal, normalScale:new THREE.Vector2(1,1),
   metalness:1, roughness:0.1, clearcoat:1, clearcoatRoughness:0.04,
   envMapIntensity:2.3, side:THREE.DoubleSide
 });
-const bodyMat = new THREE.MeshPhysicalMaterial({color:0xdfe3ea, metalness:1, roughness:0.14, clearcoat:1, envMapIntensity:2.2});
-const darkMat = new THREE.MeshStandardMaterial({color:0x5d626c, metalness:1, roughness:0.25, envMapIntensity:1.6});
+const bodyMat = new THREE.MeshPhysicalMaterial({color:0xdedede, metalness:1, roughness:0.14, clearcoat:1, envMapIntensity:2.2});
+const darkMat = new THREE.MeshStandardMaterial({color:0x5f5f5f, metalness:1, roughness:0.25, envMapIntensity:1.6});
 
 function wingMesh(kind,s,tex){
   const geo = new THREE.ExtrudeGeometry(wingShape(kind,s),{depth:.04,bevelEnabled:true,bevelThickness:.03,bevelSize:.03,bevelSegments:5,curveSegments:48});
