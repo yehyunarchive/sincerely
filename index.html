@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Silver Butterfly</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --ls:-0.6px;            /* 자간 (퍼센트 기준이었다면 -0.006em 으로 바꾸세요) */
+    --lh:1.35;              /* 행간 */
+    --card-border:#d4d4d8; --card-shadow:0 4px 18px rgba(0,0,0,.07);
+    --ink:#18181b; --sub:#71717a; --chip:#f1f2f4;
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#fff 40%,#f3f4f6 100%);
+    font-family:"Pretendard",-apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+    letter-spacing:var(--ls);line-height:var(--lh);color:var(--ink)}
+  button{font-family:inherit;letter-spacing:inherit;line-height:inherit}
+  canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+  canvas#gl:active{cursor:grabbing}
+  svg#lines{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+  svg#lines path{fill:none;stroke:#9ca0a8;stroke-width:1}
+  svg#lines .dot{fill:#27272a}
+  svg#lines .ring{fill:rgba(255,255,255,.35);stroke:#3f3f46;stroke-width:1;pointer-events:all;cursor:pointer}
+  svg#lines .pulse{fill:none;stroke:rgba(63,63,70,.45);stroke-width:1;transform-box:fill-box;transform-origin:center;
+    animation:pulse 2.4s ease-out infinite}
+  @keyframes pulse{from{transform:scale(1);opacity:.9}to{transform:scale(2.3);opacity:0}}
+  .hsbtn{position:fixed;left:0;top:0;border:1px solid #d4d4d8;background:rgba(255,255,255,.9);color:#27272a;
+    font-size:11px;font-weight:500;padding:6px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);transition:border-color .2s,background .2s}
+  .hsbtn:hover,.hsbtn:focus-visible{border-color:#71717a;background:#fff;outline:none}
+  .hint{position:fixed;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));text-align:center;
+    font-size:11px;color:#a1a1aa;pointer-events:none}
+
+  /* 팝업: 뒤 화면 블러 + 회색 테두리 + 옅은 그림자 */
+  .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;
+    background:rgba(255,255,255,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .overlay.open{display:flex;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .card{position:relative;width:min(330px,100%);max-height:84vh;overflow:auto;background:#fff;font-size:11px;
+    border:1px solid var(--card-border);border-radius:14px;box-shadow:var(--card-shadow);padding:20px 20px 18px}
+  .overlay.open .card{animation:pop .22s ease}
+  @keyframes pop{from{transform:translateY(6px) scale(.98)}to{transform:none}}
+  .close{position:absolute;top:8px;right:9px;width:26px;height:26px;border:0;background:transparent;
+    font-size:18px;line-height:1;color:var(--sub);cursor:pointer;border-radius:7px}
+  .close:hover{background:var(--chip)}
+  /* 팝업 안 글 스타일 (글 생성기와 동일) */
+  .card .meta{margin-bottom:11px;padding-right:24px}
+  .card .id-row{margin-bottom:10px}
+  .card .label{font-size:8.5px;color:#999;letter-spacing:1px;margin-bottom:2px;font-weight:500}
+  .card .para{margin-bottom:9px}
+  .card .para .n{font-size:9.5px}
+  .card .ln{line-height:1.5;margin-bottom:6px}
+  .card hr{border:0;border-top:1px solid #111;margin:11px 0 12px}
+  .card .two{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+  .card .tag{background:#111;color:#fff;padding:.3px 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  .card .g{font-size:9px;color:#999}
+  .card b{font-weight:700}
+  .card>:last-child{margin-bottom:0}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.card{width:300px;max-width:100%;font-size:8.5px}
+.tag{padding:0.2px 2.5px}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<svg id="lines"></svg>
+<div id="labels"></div>
+<div class="hint">드래그해서 돌려보고, 동그라미나 이름을 눌러보세요</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true">
+  <div class="card" id="card"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============ 버튼 이름 + 팝업 글 (글 생성기에서 복사해 이 블록을 통째로 교체하세요) ============ */
+const HOTSPOTS = [
+  { id:"wingL", label:"⑴ info", side:-1, dy:-50,
+    html:`
+<div class="meta"><span>( <i>info</i> )</span></div>
+<div class="id-row"><span class="tag">Eternity</span> · 20⁺</div>
+<div class="id-row">ㄴ ♥  블랙배저 · <b>이예현</b></div>
+<div class="label">ACCOUNTS</div>
+<p class="ln">backup acc (@reqhycine)</p>
+<hr>
+<p class="para"><span class="n">(1)</span> 반 이입 온리 동담 거부 성향으로 동장르 포함 상호 名1 필수로 요합니다 겹드림 자연 발생 시 친분 무관 제 쪽 팔로우 재고해 주세요 동담 발견 시 <b>사적 감정 일체 없는 B</b>로 대응하며 관련된 모든 종류의 컨택 받지 않습니다</p>
+<div class="id-row"><span class="tag">+ 캐릭터 특성상 아동 폭력과 같은 트리거 소재 언급이 존재할 가능성 있습니다</span></div>
+<p class="para"><span class="n">(2)</span> 강박적으로 멘션이나 트윗 삭제하곤 합니다 관련 행동에 악의는 전혀 존재하지 않아요 맞구독 형태의 맞팔로우 지향하며 교류 중요시 여기실 경우 연결 거부해요 또한 생각해 주시는 마음은 감사하나 마음 테러 내키지 않습니다</p>
+<p class="para"><span class="n">(3)</span> 논 커플링이 아닌 이예현 연성 유입하지 말아주세요 특히 화살표 구분없이 승현 → 윤 ← 예현 구조 동인 정말 싫어합니다⋯⋯ NL 성향으로 블랙배저 내 모든 캐릭터 디폴트 논 로맨스 최대 조합으로 소비해요 <span class="g">(이예현 CP 아니면 흐린 눈)</span></p>
+<p class="para"><span class="n">(4)</span> 개인 봇 언급 잦습니다 해당 문화에 부정적인 인식 가지고 있으실 경우 팔로우 X</p>
+    ` },
+  { id:"wingLo", label:"⑵ caution", side:-1, dy:60,
+    html:`
+<div class="meta"><span>( <i>caution</i> )</span></div>
+<div class="id-row"><span class="tag">NG</span></div>
+<div class="two"><div><div class="label">CP</div><p class="ln">ㄴ 이예현 관련 모든 동인 커플링</p><p class="ln">ㄴ <b>윤예 및 예현른</b></p></div><div><div class="label">TIMELINE</div><p class="ln">ㄴ 잦은 수동공격</p><p class="ln">ㄴ 캐릭터 선점용 드림</p></div></div>
+<hr>
+<p class="para"><span class="n">(1)</span> 상기 내용 외에는 팔안굽 성향으로 보편적인 도덕 윤리를 위반하는 수준이 아닐 경우 대부분 흐린 눈 합니다 <b>그러나 반복될 경우 불시에 정리할 가능성 존재합니다</b></p>
+<p class="para"><span class="n">(2)</span> 별개로 AI 채팅 및 그림 소비러 내지는 이에 연관된 분과는 어떠한 이유가 있어도 연결하지 않습니다 추후에 숨기다 들키시면 블락으로 대응합니다</p>
+    ` },
+  { id:"wingR", label:"⑶ 名1", side:1, dy:-40,
+    html:`
+<div class="meta"><span>( <i>名1</i>  )</span></div>
+<div class="id-row"><span class="tag">LIST</span> 상기 캐릭터 드림러 더 이상 받지 않으며 자연 발생 시 후발주자 FF 정리해요</div>
+<div class="label">NOTICE</div>
+<p class="ln"><span class="tag">배경</span> 캐릭터 발생 시 친분 무관 블락</p>
+<hr>
+<p class="ln"><b>블랙배저</b> · <span class="tag">리카르도 소르디</span>, <b>최윤</b></p>
+<p class="ln"><b>마법명가 차남으로 살아남는 법 </b>· 아델베르트 호엔촐레른</p>
+<p class="ln"><b>괴담에 떨어져도 출근을 해야 하는구나</b> · 김솔음, 최 요원</p>
+<p class="ln"><b>망나니 PD 아이돌로 살아남기</b> · 서호윤</p>
+<p class="ln"><b>어린 신인데 키워주시죠</b> · 한고요</p>
+<p class="ln"><b>あんさんぶるスターズ！！</b>· 氷鷹 北斗</p>
+<p class="ln"><b>プロセカ</b> · 暁山 瑞希</p>
+    ` },
+  { id:"ant", label:"⑷ fyi", side:1, dy:50,
+    html:`
+<div class="meta"><span>( <i>fyi</i>  )</span></div>
+<div class="id-row">좋아하는 것에 에너지를 쏟는 편이라 타임라인을 정독하기 어렵습니다 계옮이나 메인 드림 변경 시에는 직멘이나 디엠 필시적으로 부탁드립니다</div>
+<div class="id-row"><b>불특정 다수에게 노출될 만한 제 개인정보 공개적인 곳에서 언급하지 마세요</b></div>
+    ` }
+];
+
+/* 나비 자세 조절: 좌우 회전 / 앞뒤 기울기 / 몸통 기울기 / 날개 벌어짐 (라디안) */
+const POSE = { yaw:-0.9, pitch:-0.2, roll:-0.45, fold:0.7 };
+
+/* ============ Three.js ============ */
+const canvas = document.getElementById("gl");
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35,1,0.1,200);
+
+/* 반사용 스튜디오 환경맵: 밝은 면과 어두운 면의 대비가 은 질감을 만든다 */
+(function buildEnv(){
+  const env = new THREE.Scene();
+  const c = document.createElement("canvas"); c.width=4; c.height=256;
+  const g = c.getContext("2d"), gr = g.createLinearGradient(0,0,0,256);
+  gr.addColorStop(0,"#ffffff"); gr.addColorStop(.3,"#dfe4ee"); gr.addColorStop(.46,"#9aa3b5");
+  gr.addColorStop(.5,"#16181d"); gr.addColorStop(.62,"#4d5260"); gr.addColorStop(.8,"#aeb5c4"); gr.addColorStop(1,"#2c2f37");
+  g.fillStyle=gr; g.fillRect(0,0,4,256);
+  const tex = new THREE.CanvasTexture(c); tex.encoding = THREE.sRGBEncoding;
+  env.add(new THREE.Mesh(new THREE.SphereGeometry(50,32,16), new THREE.MeshBasicMaterial({map:tex,side:THREE.BackSide})));
+  const box = (w,h,x,y,z,i)=>{
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({color:new THREE.Color().setScalar(i),side:THREE.DoubleSide}));
+    m.position.set(x,y,z); m.lookAt(0,0,0); env.add(m);
+  };
+  box(26,7,-18,16,20,14); box(5,30,26,5,12,12); box(34,5,0,34,-8,14); box(9,9,-8,-8,28,6);
+  box(3,22,-32,0,-6,10); box(12,4,14,20,26,16);
+  box(6,26,-24,0,16,0); box(8,8,10,-4,30,0); box(4,30,18,0,24,0); box(20,3,0,10,30,0);   // 어두운 패널(대비용)
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(env,0.01).texture;
+  pm.dispose();
+})();
+const key = new THREE.DirectionalLight(0xffffff,1.3); key.position.set(4,6,8); scene.add(key);
+const rim = new THREE.PointLight(0xffffff,1.6,0,2); rim.position.set(-6,3,6); scene.add(rim);
+
+/* 날개 모양: s=+1 오른쪽, s=-1 왼쪽 */
+function wingShape(kind,s){
+  const sh = new THREE.Shape(), X = v=>v*s;
+  if(kind==="upper"){            // 마름모꼴 윗날개 + 끝이 살짝 삐져나온 뾰족한 팁
+    sh.moveTo(0,0.05);
+    sh.bezierCurveTo(X(.3),1.2, X(1.6),2.4, X(3.1),2.85);
+    sh.lineTo(X(3.7),3.2);
+    sh.lineTo(X(3.5),2.45);
+    sh.bezierCurveTo(X(3.4),1.5, X(3.0),.7, X(2.2),.1);
+    sh.bezierCurveTo(X(1.5),-.2, X(.6),-.15, 0,0.05);
+  }else{                         // 아랫날개 = 윗날개와 같은 마름모꼴을 아래로 돌려서 살짝 작게
+    const th=-1.45, c=Math.cos(th), n=Math.sin(th);
+    const T=(x,y)=>[X(.85*(x*c-y*n)), .85*(x*n+y*c)];
+    const M=(x,y)=>sh.moveTo(...T(x,y)), L=(x,y)=>sh.lineTo(...T(x,y));
+    const B=(a,b,c2,d,e,f)=>sh.bezierCurveTo(...T(a,b),...T(c2,d),...T(e,f));
+    M(0,0.05);
+    B(.3,1.2, 1.6,2.4, 3.1,2.85);
+    L(3.7,3.2);
+    L(3.5,2.45);
+    B(3.4,1.5, 3.0,.7, 2.2,.1);
+    B(1.5,-.2, .6,-.15, 0,0.05);
+  }
+  return sh;
+}
+
+/* 날개 무늬 텍스처: 가장자리 어두운 띠 + 날개맥 + 눈 무늬 → color map & bump map */
+function wingTextures(kind){
+  const pts = wingShape(kind,1).getPoints(90);
+  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  pts.forEach(p=>{minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y)});
+  const w=maxX-minX, h=maxY-minY, W=1024, H=Math.round(W*h/w);
+  const P = (x,y)=>[(x-minX)/w*W,(1-(y-minY)/h)*H];
+  const O = P(0, kind==="upper"?.05:0);
+  const pp = pts.map(p=>P(p.x,p.y));
+  const maxR = Math.max(...pp.map(p=>Math.hypot(p[0]-O[0],p[1]-O[1])));
+  const mk = ()=>{const c=document.createElement("canvas");c.width=W;c.height=H;return c;};
+  const mc=mk(), m=mc.getContext("2d");
+  const outline = ctx=>{ctx.beginPath();pp.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();};
+  const spots = kind==="upper" ? [[1.5,1.0],[2.2,1.45]] : [[1.25,-.85],[.95,-1.6]];
+
+  m.fillStyle="#fff"; m.fillRect(0,0,W,H);
+  m.save(); outline(m); m.clip();
+  // 가장자리 어두운 띠
+  const g1=m.createRadialGradient(O[0],O[1],maxR*.5,O[0],O[1],maxR);
+  g1.addColorStop(0,"rgba(40,44,52,0)"); g1.addColorStop(.62,"rgba(40,44,52,.03)"); g1.addColorStop(1,"rgba(24,26,32,.55)");
+  m.fillStyle=g1; m.fillRect(0,0,W,H);
+  const g2=m.createRadialGradient(O[0],O[1],maxR*.86,O[0],O[1],maxR);
+  g2.addColorStop(0,"rgba(20,22,28,0)"); g2.addColorStop(1,"rgba(14,15,19,1)");
+  m.restore();
+  const map = new THREE.CanvasTexture(mc); map.encoding = THREE.sRGBEncoding; map.anisotropy = 8;
+
+  // 날개결 노멀맵: 부채꼴 골 + 완만한 곡면을 수식으로 계산 (반사 흐름이 생겨 금속 질감이 산다)
+  const NW=512, NH=Math.max(64,Math.round(NW*h/w)), sc=NW/W;
+  const nc=document.createElement("canvas"); nc.width=NW; nc.height=NH;
+  const nctx=nc.getContext("2d"), img=nctx.createImageData(NW,NH);
+  const ox=O[0]*sc, oy=O[1]*sc, K=3.2;
+  const hf=(x,y)=>{const dx=x-ox,dy=y-oy,r=Math.hypot(dx,dy),th=Math.atan2(dy,dx);
+    return 14*Math.sin(th*K)*Math.min(1,r/80)+0.0009*r*r;};
+  for(let y=0;y<NH;y++)for(let x=0;x<NW;x++){
+    const dhx=(hf(x+1,y)-hf(x-1,y))/2, dhy=(hf(x,y+1)-hf(x,y-1))/2;
+    let nx=-dhx, ny=dhy, nz=1; const l=Math.hypot(nx,ny,nz); nx/=l;ny/=l;nz/=l;
+    const i=(y*NW+x)*4; img.data[i]=(nx*.5+.5)*255; img.data[i+1]=(ny*.5+.5)*255; img.data[i+2]=(nz*.5+.5)*255; img.data[i+3]=255;
+  }
+  nctx.putImageData(img,0,0);
+  const normal = new THREE.CanvasTexture(nc); normal.anisotropy = 8;
+  return {map, normal, minX, minY, w, h};
+}
+
+const silverMat = t => new THREE.MeshPhysicalMaterial({
+  color:0xd8dce4, map:t.map, normalMap:t.normal, normalScale:new THREE.Vector2(1,1),
+  metalness:1, roughness:0.1, clearcoat:1, clearcoatRoughness:0.04,
+  envMapIntensity:2.3, side:THREE.DoubleSide
+});
+const bodyMat = new THREE.MeshPhysicalMaterial({color:0xdfe3ea, metalness:1, roughness:0.14, clearcoat:1, envMapIntensity:2.2});
+const darkMat = new THREE.MeshStandardMaterial({color:0x5d626c, metalness:1, roughness:0.25, envMapIntensity:1.6});
+
+function wingMesh(kind,s,tex){
+  const geo = new THREE.ExtrudeGeometry(wingShape(kind,s),{depth:.04,bevelEnabled:true,bevelThickness:.03,bevelSize:.03,bevelSegments:5,curveSegments:48});
+  const pos = geo.attributes.position, uv = geo.attributes.uv;
+  for(let i=0;i<pos.count;i++) uv.setXY(i,(pos.getX(i)*s-tex.minX)/tex.w,(pos.getY(i)-tex.minY)/tex.h);
+  uv.needsUpdate = true;
+  geo.translate(0,0,-.02);
+  return new THREE.Mesh(geo,silverMat(tex));
+}
+
+const butterfly = new THREE.Group(); butterfly.rotation.order = "ZXY"; scene.add(butterfly);
+const texUp = wingTextures("upper"), texLo = wingTextures("lower");
+const wingR = new THREE.Group(), wingL = new THREE.Group();
+[wingR,wingL].forEach((w,i)=>{
+  const s = i? -1:1;
+  w.position.y = .45;
+  const up = wingMesh("upper",s,texUp), lo = wingMesh("lower",s,texLo);
+  lo.position.z = -.045; w.add(up,lo); butterfly.add(w);
+});
+
+/* 몸통 + 더듬이 */
+const body = new THREE.Group(); butterfly.add(body);
+const part = (y,sx,sy,sz)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(1,48,32),bodyMat);m.position.y=y;m.scale.set(sx,sy,sz);body.add(m);};
+part(.55,.16,.5,.16); part(-.85,.12,1.05,.12); part(1.2,.16,.16,.16);
+[1,-1].forEach(s=>{
+  const c = new THREE.CatmullRomCurve3([new THREE.Vector3(s*.05,1.3,0),new THREE.Vector3(s*.2,1.9,.05),new THREE.Vector3(s*.5,2.4,.1),new THREE.Vector3(s*.8,2.6,.1)]);
+  body.add(new THREE.Mesh(new THREE.TubeGeometry(c,40,.016,8),darkMat));
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(.045,16,16),bodyMat); tip.position.set(s*.8,2.6,.1); body.add(tip);
+});
+
+/* 클릭 지점: 해당 파츠의 자식이라 날갯짓·회전을 그대로 따라감 */
+const anchor = (parent,x,y,z)=>{const o=new THREE.Object3D();o.position.set(x,y,z);parent.add(o);return o;};
+const anchors = { wingL:anchor(wingL,-3.2,2.4,.1), wingLo:anchor(wingL,-1.7,-2.2,.1),
+                  wingR:anchor(wingR,3.2,2.4,.1),  ant:anchor(body,.8,2.6,.1) };
+
+/* ============ 오버레이(동그라미 + 선 + 라벨) ============ */
+const svg = document.getElementById("lines"), labelBox = document.getElementById("labels");
+const NS = "http://www.w3.org/2000/svg", R = 9;
+HOTSPOTS.forEach(h=>{
+  h.path = document.createElementNS(NS,"path");
+  h.g = document.createElementNS(NS,"g");
+  h.pulse = document.createElementNS(NS,"circle"); h.pulse.setAttribute("r",R); h.pulse.setAttribute("class","pulse");
+  h.ring = document.createElementNS(NS,"circle"); h.ring.setAttribute("r",R); h.ring.setAttribute("class","ring");
+  h.dot = document.createElementNS(NS,"circle"); h.dot.setAttribute("r",2); h.dot.setAttribute("class","dot");
+  h.ring.addEventListener("click",()=>openPopup(h));
+  h.g.append(h.pulse,h.ring,h.dot); svg.append(h.path,h.g);
+  h.btn = document.createElement("button"); h.btn.className="hsbtn"; h.btn.textContent=h.label;
+  h.btn.addEventListener("click",()=>openPopup(h)); labelBox.append(h.btn);
+});
+const v = new THREE.Vector3();
+function updateOverlay(){
+  const W = innerWidth, H = innerHeight, cx = W/2;
+  const spread = Math.min(W*.3, 190);
+  HOTSPOTS.forEach(h=>{
+    anchors[h.id].getWorldPosition(v); v.project(camera);
+    const ax = (v.x+1)/2*W, ay = (1-v.y)/2*H;
+    const margin = 10, bw = h.btn.offsetWidth;
+    let lx = h.side>0 ? Math.max(ax+50, cx+spread) : Math.min(ax-50, cx-spread);
+    lx = h.side>0 ? Math.min(lx, W-margin-bw) : Math.max(lx, margin+bw);
+    const ly = Math.min(Math.max(ay+h.dy, 50), H-60);
+    const ex = ax + h.side*Math.min(34, Math.abs(lx-ax)/2);
+    const sx = ax + (ex>ax?R:-R)*.7, sy = ay + (ly>ay?R:-R)*.7;
+    h.path.setAttribute("d",`M${sx},${sy} L${ex},${ly} L${lx},${ly}`);
+    [h.pulse,h.ring,h.dot].forEach(c=>{c.setAttribute("cx",ax);c.setAttribute("cy",ay)});
+    h.btn.style.transform = `translate(${h.side>0?lx:lx-bw}px,${ly-13}px)`;
+  });
+}
+
+/* ============ 팝업 ============ */
+const overlay = document.getElementById("overlay"), card = document.getElementById("card");
+function openPopup(h){
+  card.innerHTML = `<button class="close" aria-label="닫기">×</button>` + h.html;
+  card.querySelector(".close").onclick = closePopup;
+  overlay.classList.add("open"); card.scrollTop = 0;
+}
+function closePopup(){ overlay.classList.remove("open"); }
+overlay.addEventListener("click",e=>{ if(e.target===overlay) closePopup(); });
+addEventListener("keydown",e=>{ if(e.key==="Escape") closePopup(); });
+
+/* ============ 드래그 회전 + 애니메이션 ============ */
+let dragging=false, lx0=0, ly0=0, rotY=0, rotX=0;
+canvas.addEventListener("pointerdown",e=>{dragging=true;lx0=e.clientX;ly0=e.clientY;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener("pointermove",e=>{
+  if(!dragging) return;
+  rotY += (e.clientX-lx0)*.008; rotX = Math.max(-.7,Math.min(.7,rotX+(e.clientY-ly0)*.006));
+  lx0=e.clientX; ly0=e.clientY;
+});
+["pointerup","pointercancel"].forEach(t=>canvas.addEventListener(t,()=>dragging=false));
+
+function resize(){
+  const w=innerWidth,h=innerHeight; renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  const ppu = Math.min(44, w/8.4);                       // 1 단위당 화면 픽셀 → 나비 크기 (작게: 약 300px)
+  camera.position.set(0,.2,h/(2*Math.tan(THREE.MathUtils.degToRad(17.5))*ppu));
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize",resize); resize();
+
+const clock = new THREE.Clock();
+function tick(){
+  const t = clock.getElapsedTime();
+  if(!dragging){ rotY += (Math.sin(t*.45)*.22 - rotY)*.02; rotX += (0 - rotX)*.03; }
+  butterfly.rotation.set(POSE.pitch+rotX, POSE.yaw+rotY, POSE.roll+Math.sin(t*.6)*.03);
+  butterfly.position.y = Math.sin(t*1.1)*.1;
+  const a = POSE.fold + Math.sin(t*1.7)*.2;              // 날갯짓
+  wingR.rotation.y = -a; wingL.rotation.y = a;
+  butterfly.updateMatrixWorld(true);
+  renderer.render(scene,camera);
+  updateOverlay();
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
+</body>
+</html>
