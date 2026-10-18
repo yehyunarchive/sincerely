@@ -582,6 +582,23 @@ addEventListener("resize",renderScatter);
 if(document.fonts){ document.fonts.ready.then(renderScatter); document.fonts.addEventListener("loadingdone",renderScatter); }
 
 applyFX();
+
+/* ============ 배경음악 ============ */
+/* ▼▼▼ 아래 따옴표 안에 티스토리 mp3 링크를 붙여넣으세요 (https 로 시작) ▼▼▼ */
+const MUSIC_URL = "https://blog.kakaocdn.net/dna/bcKpQh/dJMcafheFte/AAAAAAAAAAAAAAAAAAAAACGTlVnr1CWLp6CHIwE4MidBmD-SSHXQCQa3Zs3qNYDK/ScreenRecording_09-29-2026%2021-12-41_1.mp3?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1793458799&allow_ip=&allow_referer=&signature=IaYZsCkKI2OjaT%2FMixLJnOZnDdQ%3D&attach=1&knm=tfile.mp3";
+/* ▲▲▲ ─────────────────────────────────────────────── ▲▲▲ */
+const bgm = new Audio(MUSIC_URL);
+bgm.loop = true;
+bgm.volume = 0.6;      // 0 ~ 1
+bgm.preload = "auto";
+
+function startBgm(){
+  bgm.play().then(()=>{
+    ["pointerdown","touchend","keydown"].forEach(t=>removeEventListener(t,startBgm,true));
+  }).catch(()=>{ /* 아직 막힘: 다음 터치 때 다시 시도 */ });
+}
+startBgm();   // 접속하자마자 시도 (허용되는 환경이면 바로 재생)
+["pointerdown","touchend","keydown"].forEach(t=>addEventListener(t,startBgm,true));  // 막히면 첫 터치/클릭에 재생
 </script>
 </body>
 </html>
