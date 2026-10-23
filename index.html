@@ -20,7 +20,17 @@
     letter-spacing:var(--ls);line-height:var(--lh);color:var(--ink)}
   button,input,textarea{font-family:inherit}
   button{letter-spacing:inherit;line-height:inherit}
-  [data-t]{white-space:pre-line;font-size:calc(var(--fs,12px)*var(--m,1));letter-spacing:calc(var(--lsb,-.02em) + var(--sp,0px))}
+  /* 일반 글자 자간 -0.3px (큰 제목·워드마크는 기존 자간 유지) */
+  [data-t]{white-space:pre-line;font-size:calc(var(--fs,12px)*var(--m,1));letter-spacing:-0.3px}
+  .title[data-t],.word[data-t]{letter-spacing:calc(var(--lsb,-.02em) + var(--sp,0px))}
+
+  /* 좌측 상단 Eternity 옆 회색 동그라미 */
+  [data-t="kicker"]::before{content:"";display:inline-block;width:.7em;height:.7em;border-radius:50%;
+    background:#b8b8b8;margin-right:.6em;vertical-align:baseline}
+  /* ( unlessfarewell ) 괄호: 바로 서고 가늘게, 영어만 기울임 */
+  .pr{font-style:normal;font-size:1em;font-weight:inherit;line-height:inherit;color:inherit}
+  .pr:first-child{margin-right:.4em}
+  .pr:last-child{margin-left:.4em}
 
   canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;z-index:1}
   canvas#gl:active{cursor:grabbing}
@@ -49,7 +59,7 @@
   .top,.foot{position:fixed;z-index:0;left:50%;transform:translateX(-50%);width:min(720px,calc(100% - 44px));pointer-events:none;color:#5b5b5b;font-weight:500}
   .top{top:calc(env(safe-area-inset-top,0px) + 20px)}
   .foot{bottom:calc(30px + env(safe-area-inset-bottom,0px))}
-  .dmeta{display:flex;justify-content:space-between;gap:8px;--fs:calc(11px*var(--k))}
+  .dmeta{display:flex;justify-content:space-between;align-items:center;gap:8px;--fs:calc(11px*var(--k))}
   .dmeta>:last-child{--fs:calc(9px*var(--k));text-align:right}
   .hero{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-top:9px}
   .title{--fs:clamp(38px,12.6vw,86px);--lsb:-.065em;font-weight:900;line-height:.86;color:#151515;text-shadow:0 0 7px rgba(200,200,200,.55)}
@@ -118,7 +128,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const PRESET = {"TEXTS": {"kicker": "Eternity", "issue": "unlessfarewell", "date": "centercore", "title": "", "sub": "to / my / commander\nsincerely yours;", "tagA": "", "tagB": "", "sideNote": "If only oblivion were mercy⋯.", "badge": "@cisqure", "wordmark": "Broken-wings®", "desc": "Nevertheless, the age we hold ever so near and love beyond measure remains as dear as ever.", "chip2": "Hyperventilation"}, "STY": {"kicker": {"m": 0.9, "sp": -0.5, "b": false, "i": false}, "issue": {"m": 0.8, "sp": -0.5, "b": false, "i": true}, "date": {"m": 1, "sp": -0.5, "b": true, "i": false}, "title": {"m": 0.3, "sp": 0, "b": true, "i": false}, "sub": {"m": 1, "sp": -0.5, "b": false, "i": false}, "tagA": {"m": 1, "sp": 0, "b": false, "i": false}, "tagB": {"m": 1, "sp": 0, "b": false, "i": false}, "sideNote": {"m": 0.95, "sp": -0.5, "b": false, "i": false}, "badge": {"m": 1, "sp": -0.5, "b": false, "i": false}, "wordmark": {"m": 1, "sp": -0.5, "b": true, "i": false}, "desc": {"m": 1, "sp": -0.5, "b": false, "i": false}, "chip2": {"m": 1, "sp": -0.5, "b": false, "i": false}}, "FX": {"shade": 1.4, "refl": 0.35, "scat": 2, "grain": 3, "count": 68}};
+const PRESET = {"TEXTS": {"kicker": "Eternity", "issue": "unlessfarewell", "date": "centercore", "title": "", "sub": "to / my / commander\nsincerely yours;", "tagA": "", "tagB": "", "sideNote": "If only oblivion were mercy⋯.", "badge": "@cisqure", "wordmark": "Broken-wings®", "desc": "Nevertheless, the age we hold ever so near and love beyond measure remains as dear as ever.", "chip2": "Hyperventilation"}, "STY": {"kicker": {"m": 0.9, "sp": -0.5, "b": false, "i": false}, "issue": {"m": 0.8, "sp": -0.5, "b": false, "i": false}, "date": {"m": 1, "sp": -0.5, "b": true, "i": false}, "title": {"m": 0.3, "sp": 0, "b": true, "i": false}, "sub": {"m": 1, "sp": -0.5, "b": false, "i": false}, "tagA": {"m": 1, "sp": 0, "b": false, "i": false}, "tagB": {"m": 1, "sp": 0, "b": false, "i": false}, "sideNote": {"m": 0.95, "sp": -0.5, "b": false, "i": false}, "badge": {"m": 1, "sp": -0.5, "b": false, "i": false}, "wordmark": {"m": 1, "sp": -0.5, "b": true, "i": false}, "desc": {"m": 1, "sp": -0.5, "b": false, "i": false}, "chip2": {"m": 1, "sp": -0.5, "b": false, "i": false}}, "FX": {"shade": 1.4, "refl": 0.35, "scat": 2, "grain": 3, "count": 68}};
 const EDIT_MODE = false;
 const TEXTS = {
   kicker:"Eternity®", issue:"Vol.01 — Silver", date:"2026.10.14", title:"Silver\nButterfly!", sub:"Wing / Dust /\nLight, Silence",
@@ -163,7 +173,16 @@ function renderScatter(){
 function applyTexts(){
   document.querySelectorAll("[data-t]").forEach(el=>{
     const k=el.dataset.t; if(!(k in TEXTS)) return;
-    const on = TEXTS[k].trim(); el.textContent = on ? TEXTS[k] : DEF[k]; el.style.visibility = on ? "" : "hidden";
+    const on = TEXTS[k].trim(); const txt = on ? TEXTS[k] : DEF[k];
+    if(k==="issue"){
+      /* ( unlessfarewell ) : 괄호는 바로 서고, 영어만 기울임 */
+      el.textContent="";
+      const a=document.createElement("span"); a.className="pr"; a.textContent="(";
+      const m=document.createElement("i"); m.textContent=txt;
+      const z=document.createElement("span"); z.className="pr"; z.textContent=")";
+      el.append(a,m,z);
+    }else el.textContent = txt;
+    el.style.visibility = on ? "" : "hidden";
     const s=sty(k); el.style.setProperty("--m",s.m); el.style.setProperty("--sp",s.sp+"px");
     const rt=["date","sub","sideNote"].includes(k); el.style.fontWeight = s.b ? (k==="title"?900:rt?600:800) : (k==="desc"||rt?400:500); el.style.fontStyle = s.i ? "italic" : "normal";
   });
@@ -177,7 +196,7 @@ const HOTSPOTS = [
 <div class="id-row"><span class="tag">Eternity</span> · 20⁺</div>
 <div class="id-row">ㄴ ♥  블랙배저 · <b>이예현</b></div>
 <div class="label">ACCOUNTS</div>
-<p class="ln">backup acc (@siderealune)</p>
+<p class="ln">backup acc (@pesquaromance)</p>
 <hr>
 <p class="para"><span class="n">(1)</span> 반 이입 온리 동담 거부 성향으로 동장르 포함 상호 名1 필수로 요합니다 겹드림 자연 발생 시 친분 무관 제 쪽 팔로우 재고해 주세요 동담 발견 시 <b>사적 감정 일체 없는 B</b>로 대응하며 관련된 모든 종류의 컨택 받지 않습니다</p>
 <div class="id-row"><span class="tag">+ 캐릭터 특성상 아동 폭력과 같은 트리거 소재 언급이 존재할 가능성 있습니다</span></div>
