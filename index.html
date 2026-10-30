@@ -127,8 +127,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* 팝업 자간·행간 강제 고정 */
 .card,
 .card *:not(.close){
-  letter-spacing:-0.6px !important;
+  letter-spacing:-0.65px !important;
   line-height:1.35 !important;
+}
+
+/* chip2 얇은 검은 네모 테두리 */
+.fr [data-t="chip2"]{
+  display:inline-block;
+  border:1px solid #181818;
+  padding:3px 8px;
+  border-radius:0;
+  line-height:1.2;
 }
 </style>
 </head>
