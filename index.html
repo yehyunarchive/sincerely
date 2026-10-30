@@ -68,15 +68,15 @@
   .word{--fs:clamp(24px,7.4vw,38px);--lsb:-.055em;font-weight:800;line-height:1;margin:9px 0 7px;color:transparent}
   .desc{--fs:calc(9.5px*var(--k));--lsb:0px;font-weight:400;line-height:1.55;color:#7b7b7b;max-width:215px}
   .overlay{position:fixed;z-index:20;inset:0;display:none;align-items:center;justify-content:center;padding:20px;
-    background:rgba(255,255,255,.2);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+    background:rgba(255,255,255,.1);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
   .overlay.open{display:flex;animation:fade .2s ease}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   .card{position:relative;width:300px;max-width:100%;max-height:84vh;overflow:auto;
-    background:rgba(255,255,255,.32);
-    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+    background:rgba(255,255,255,.2);background-clip:padding-box;
+    -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
     font-size:8.5px;color:#3b3b3b;
-    border:.5px solid rgba(180,180,180,.4);border-radius:14px;
-    box-shadow:0 0 10px rgba(205,205,205,.35);padding:20px 20px 18px}
+    border:1px solid rgba(190,190,190,.3);border-radius:14px;
+    box-shadow:0 0 8px rgba(205,205,205,.25);padding:20px 20px 18px}
   .overlay.open .card{animation:pop .22s ease}
   @keyframes pop{from{transform:translateY(6px) scale(.98)}to{transform:none}}
   .close{position:absolute;top:8px;right:9px;width:26px;height:26px;border:0;background:transparent;
