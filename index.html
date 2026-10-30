@@ -119,6 +119,17 @@
 .card hr.h-s{width:26px}
 .card .sl{display:inline-block;transform:skewX(-14deg);transform-origin:0 100%}
 @media (prefers-reduced-motion:reduce){.card .hl{background-size:100% 50%!important}.card .u{background-size:100% 1px!important}}
+
+/* 모바일 글자 자동 확대 방지 */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.card,.card *{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
+/* 팝업 자간·행간 강제 고정 */
+.card,
+.card *:not(.close){
+  letter-spacing:-0.5px !important;
+  line-height:1.35 !important;
+}
 </style>
 </head>
 <body>
