@@ -16,22 +16,17 @@
   }
   *{box-sizing:border-box;margin:0}
   html,body{height:100%;overflow:hidden;background:#fff;
-    font-family:"Pretendard Variable","Pretendard",-apple-system,system-ui,sans-serif;
+    font-family:"Pretendard Variable","Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,system-ui,sans-serif;
     letter-spacing:var(--ls);line-height:var(--lh);color:var(--ink)}
   button,input,textarea{font-family:inherit}
   button{letter-spacing:inherit;line-height:inherit}
-  /* 일반 글자 자간 -0.3px (큰 제목·워드마크는 기존 자간 유지) */
   [data-t]{white-space:pre-line;font-size:calc(var(--fs,12px)*var(--m,1));letter-spacing:-0.3px}
   .title[data-t],.word[data-t]{letter-spacing:calc(var(--lsb,-.02em) + var(--sp,0px))}
-
-  /* 좌측 상단 Eternity 옆 회색 동그라미 */
   [data-t="kicker"]::before{content:"";display:inline-block;width:.7em;height:.7em;border-radius:50%;
     background:#b8b8b8;margin-right:.6em;vertical-align:baseline}
-  /* ( unlessfarewell ) 괄호: 바로 서고 가늘게, 영어만 기울임 */
   .pr{font-style:normal;font-size:1em;font-weight:inherit;line-height:inherit;color:inherit}
   .pr:first-child{margin-right:.4em}
   .pr:last-child{margin-left:.4em}
-
   canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;z-index:1}
   canvas#gl:active{cursor:grabbing}
   #contact{position:fixed;z-index:0;left:var(--fx);top:calc(var(--fy) - 7px);width:calc(var(--bw)*.7);height:14px;
@@ -40,7 +35,6 @@
   #hair{position:fixed;z-index:3;left:8%;right:8%;top:var(--fy);height:1px;pointer-events:none;
     background:linear-gradient(90deg,transparent,#ccc 22%,#ccc 78%,transparent)}
   canvas#shards{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
-
   svg#lines{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
   svg#lines path{fill:none;stroke:#d2d2d2;stroke-width:.8}
   svg#lines .dot{fill:#9f9f9f}
@@ -73,13 +67,12 @@
   .fr{text-align:right}
   .word{--fs:clamp(24px,7.4vw,38px);--lsb:-.055em;font-weight:800;line-height:1;margin:9px 0 7px;color:transparent}
   .desc{--fs:calc(9.5px*var(--k));--lsb:0px;font-weight:400;line-height:1.55;color:#7b7b7b;max-width:215px}
-
   .overlay{position:fixed;z-index:20;inset:0;display:none;align-items:center;justify-content:center;padding:20px;
     background:rgba(255,255,255,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
   .overlay.open{display:flex;animation:fade .2s ease}
   @keyframes fade{from{opacity:0}to{opacity:1}}
-  .card{position:relative;width:300px;max-width:100%;max-height:84vh;overflow:auto;background:#fff;font-size:8.5px;color:#3b3b3b;
-    border:0;border-radius:14px;box-shadow:0 0 14px rgba(205,205,205,.55);padding:20px 20px 18px}
+  .card{position:relative;width:300px;max-width:100%;max-height:84vh;overflow:auto;background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:8.5px;color:#3b3b3b;
+    border:1px solid rgba(180,180,180,.6);border-radius:14px;box-shadow:0 0 14px rgba(205,205,205,.55);padding:20px 20px 18px}
   .overlay.open .card{animation:pop .22s ease}
   @keyframes pop{from{transform:translateY(6px) scale(.98)}to{transform:none}}
   .close{position:absolute;top:8px;right:9px;width:26px;height:26px;border:0;background:transparent;
@@ -97,9 +90,7 @@
   .card .g{font-size:9px;color:#999}
   .card b{font-weight:700}
   .card>:last-child{margin-bottom:0}
-
   @media (prefers-reduced-motion:reduce){*{animation:none!important}}
-/* ▼ 팝업 서식 */
 .card{text-rendering:geometricPrecision;font-kerning:none;font-feature-settings:"kern" 0,"calt" 0,"liga" 0;-webkit-font-smoothing:antialiased}
 .card .hl{background-image:linear-gradient(rgba(200,200,200,.6),rgba(200,200,200,.6));background-repeat:no-repeat;background-position:0 100%;background-size:0 50%;-webkit-box-decoration-break:clone;box-decoration-break:clone;animation:hlDraw .7s .25s cubic-bezier(.4,0,.2,1) forwards}
 .card .u{background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;background-position:0 100%;background-size:0 1px;-webkit-box-decoration-break:clone;box-decoration-break:clone;animation:uDraw .6s .25s cubic-bezier(.4,0,.2,1) forwards}
@@ -124,11 +115,9 @@
 .card hr.h-s{width:26px}
 .card .sl{display:inline-block;transform:skewX(-14deg);transform-origin:0 100%}
 @media (prefers-reduced-motion:reduce){.card .hl{background-size:100% 50%!important}.card .u{background-size:100% 1px!important}}
-/* ▲ 팝업 서식 */
 </style>
 </head>
 <body>
-
 <div id="contact"></div>
 <canvas id="gl"></canvas>
 <div id="fade"></div>
@@ -147,31 +136,17 @@
     <div class="fr"><div data-t="chip2"></div></div>
   </div>
 </div>
-
 <div class="overlay" id="overlay" role="dialog" aria-modal="true">
   <div class="card" id="card"></div>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const PRESET = {"TEXTS":{"kicker":"Eternity","issue":"unlessfarewell","date":"centercore","title":"","sub":"to / my / commander\nsincerely yours;","tagA":"","tagB":"","sideNote":"If only oblivion were mercy⋯.","badge":"@cisqure","wordmark":"Broken-wings®","desc":"Nevertheless, the age we hold ever so near and love beyond measure remains as dear as ever.","chip2":"Hyperventilation"},"STY":{"kicker":{"m":0.9,"sp":-0.5,"b":false,"i":false},"issue":{"m":0.8,"sp":-0.5,"b":false,"i":false},"date":{"m":1,"sp":-0.5,"b":true,"i":false},"title":{"m":0.3,"sp":0,"b":true,"i":false},"sub":{"m":1,"sp":-0.5,"b":false,"i":false},"tagA":{"m":1,"sp":0,"b":false,"i":false},"tagB":{"m":1,"sp":0,"b":false,"i":false},"sideNote":{"m":0.95,"sp":-0.5,"b":false,"i":false},"badge":{"m":1,"sp":-0.5,"b":false,"i":false},"wordmark":{"m":1,"sp":-0.5,"b":true,"i":false},"desc":{"m":1,"sp":-0.5,"b":false,"i":false},"chip2":{"m":1,"sp":-0.5,"b":false,"i":false}},"FX":{"shade":1.4,"refl":0.35,"scat":2,"grain":3,"count":68},"hs":[{"label":"(1) info","html":"<div class=\"meta\" style=\"line-height: 1.4; letter-spacing: -0.6px;\"><br><\/div>\n<div class=\"id-row\" style=\"text-align: right; margin-bottom: 2px; line-height: 1.4; letter-spacing: -0.6px;\"><span class=\"tag\">Eternity<\/span> · 20⁺<\/div><div class=\"id-row\" style=\"text-align: right; margin-bottom: 2px; line-height: 1.4; letter-spacing: -0.6px;\">블랙배저 <b>이예현<\/b><\/div>\n<div class=\"label\" style=\"line-height: 1.4;\"><br><\/div><p class=\"para\" style=\"line-height: 1.4; letter-spacing: -0.6px;\">⑴ 반 이입 온리 동담 거부 성향으로 <span class=\"hl\">동장르 포함 상호 名1 <\/span>필수 요합니다 겹드림 자연 발생 시 친분 무관 제 쪽과의 연결 재고 부탁드려요 동담 발견 시 <b>사적 감정 일체 없는 블락<\/b>으로 대응하며 관련해 컨택 받지 않습니다<\/p><p class=\"para\" style=\"line-height: 1.4; letter-spacing: -0.6px;\">⑵ 맞구독 형태의 맞팔로우 지향하며 교류 중요시 여기실 경우 연결 거부해요 또한 생각해 주시는 마음은 감사하나 과도한 마음 테러 내키지 않습니다 <span class=\"gy\">렉 걸려요 삼가주세요<\/span><\/p>\n<p class=\"para\" style=\"line-height: 1.4; letter-spacing: -0.6px;\">⑶ 논 커플링이 아닌 이예현 연성 유입하지 말아주세요 특히 화살표 구분없이 <b>승현 → 윤 ← 예현<\/b>&nbsp;구조의 동인 정말 싫어합니다⋯⋯ 극 NL 성향으로 블랙배저 내 모든 캐릭터 디폴트 논 로맨스 최대 조합으로 소비해요 <span class=\"g\">(이예현 CP 아니면 흐린 눈 O)<\/span><\/p>\n<p class=\"para\" style=\"line-height: 1.4; letter-spacing: -0.6px;\">⑷ <b>개인 봇 언급<\/b> 잦습니다 해당 문화에 부정적인 인식 가지고 있으실 경우 연결 X<\/p>"},{"label":"(2) caution","html":"<div class=\"meta\" style=\"line-height: 1.4; letter-spacing: -0.6px;\"><\/div><span class=\"fs\" style=\"font-size: 8.5px;\"><div class=\"meta\" style=\"line-height: 1.4; letter-spacing: -0.6px; text-align: right;\"><br><\/div><div class=\"meta\" style=\"line-height: 1.4; letter-spacing: -0.6px; margin-bottom: 1px;\"><span style=\"letter-spacing: -0.7px; -webkit-text-size-adjust: 100%;\">¹ <\/span><span class=\"hl\" style=\"letter-spacing: -0.7px; -webkit-text-size-adjust: 100%;\">이예현이 포함된 모든 커플링<\/span><br><\/div><div class=\"meta\" style=\"margin-bottom: 1px; line-height: 1.4; letter-spacing: -0.6px;\">² <b>사찰 및 반복적인 계정 방문으로 트윗 조회수 늘리기<\/b><\/div><div class=\"meta\" style=\"margin-bottom: 1px; line-height: 1.4; letter-spacing: -0.6px;\">³ AI 채팅 소비 및 그와 관련된 계정과의 연결<\/div><div class=\"meta\" style=\"margin-bottom: 1px; line-height: 1.4; letter-spacing: -0.6px;\"><span style=\"letter-spacing: -0.6px; -webkit-text-size-adjust: 100%;\">⁴ 캐릭터 선점용 드림 <span class=\"gy\">내지는 친목질 목적 드림<\/span><\/span><\/div><div style=\"line-height: 1.4; letter-spacing: -0.6px;\"><br><\/div><div style=\"line-height: 1.4; letter-spacing: -0.6px;\">상기 내용 외에는 팔안굽 성향으로 보편적인 도덕 윤리를 위반하는 수준이 아닐 경우 대부분 흐린 눈 합니다 <b>그러나 반복될 경우 불시에 정리할 가능성 존재<\/b><\/div><div style=\"line-height: 1.4; letter-spacing: -0.6px;\"><b><br><\/b><\/div><div style=\"line-height: 1.4; letter-spacing: -0.6px;\"><b><br><\/b><\/div><div style=\"line-height: 1.4; letter-spacing: -0.6px; text-align: right;\"><b>NG <\/b>해당 사유들로 인한 이별의 경우 재연결 거부<\/div><\/span><div style=\"line-height: 1.4; letter-spacing: -0.6px;\"><b><\/b><\/div>"},{"label":"(3) 名1","html":"<div class=\"meta\" style=\"line-height: 1.4; letter-spacing: -0.6px;\"><br><\/div><div class=\"meta\" style=\"line-height: 1.4; letter-spacing: -0.6px;\">애정하는 인연이 있어 받지 않으며 <span class=\"hl\">친분 무관 후발주자 정리합니다<\/span><\/div>\n<hr>\n<div class=\"two\"><div><p class=\"ln\" style=\"margin-bottom: 0px; line-height: 1.4; letter-spacing: -0.6px;\"><b>최윤<\/b><\/p><p class=\"ln\" style=\"margin-bottom: 0px; line-height: 1.4; letter-spacing: -0.6px;\">아델베르트 호엔촐레른<\/p><p class=\"ln\" style=\"margin-bottom: 0px; line-height: 1.4; letter-spacing: -0.6px;\">최 요원<\/p><p class=\"ln\" style=\"margin-bottom: 0px; line-height: 1.4; letter-spacing: -0.6px;\">서호윤<\/p><p class=\"ln\" style=\"margin-bottom: 0px; line-height: 1.4; letter-spacing: -0.6px;\">한고요<\/p><p class=\"ln\" style=\"margin-bottom: 0px; line-height: 1.4; letter-spacing: -0.6px;\"><\/p><p class=\"ln\" style=\"margin-bottom: 0px; line-height: 1.4; letter-spacing: -0.6px;\">氷鷹 北斗<\/p><p class=\"ln\" style=\"margin-bottom: 0px; line-height: 1.4; letter-spacing: -0.6px;\">暁山 瑞希<\/p><\/div><div><p class=\"ln\">이예현 외 배려 요하지 않으며 만약 두 가지 이상의 드림 상호 기재 원하신다면 <span class=\"hl\"><b>너희들은 변호됐다 <\/b>차주한<\/span> 추가 부탁드립니다<\/p><p class=\"ln\"><br><\/p><\/div><\/div>"},{"label":"(4) fyi","html":"<div class=\"meta\" style=\"line-height: 1.4; letter-spacing: -0.6px;\"><br><\/div>\n<div class=\"id-row\" style=\"line-height: 1.4; letter-spacing: -0.6px;\">재학중인&nbsp;<span style=\"letter-spacing: -0.6px; -webkit-text-size-adjust: 100%;\">과 특성상 일정이 극히 유동적이고 바쁜 탓에 주말이나 공휴일이 아니라면 빠른 시일 내에 답신 어렵고 공지 트윗 쉽게 놓칩니다 <b>메인 드림 변경<\/b>이나&nbsp;<b>계정 이동<\/b> 등의 사항은 괘념치 않으니 <span class=\"hl\">친분 무관 먼저 팔로우 내지 직멘 부탁드립니다<\/span><\/span><\/div><div class=\"id-row\" style=\"line-height: 1.4; letter-spacing: -0.6px;\">단순 호감 발언을 차치하고 작품 완독 여부 및 친분 무관하여 <b>타인에게서 나오는 이예현 관련 <span class=\"hl\">정실격 발언에 준하는 언급에 면역이 없습니다<\/span><\/b> 가능 ← 불가합니다<\/div><div class=\"id-row\" style=\"line-height: 1.4; letter-spacing: -0.6px;\">미리 고지하지 않은 부분에서의 잡음 싫어합니디 <span class=\"gy\"><b>계정 연결 = 성향 이해 및 정독으로 간주<\/b><\/span><b><\/b><\/div>"}]};
-const EDIT_MODE = false;
-const TEXTS = {
-  kicker:"Eternity®", issue:"Vol.01 — Silver", date:"2026.10.14", title:"Silver\nButterfly!", sub:"Wing / Dust /\nLight, Silence",
-  tagA:"Eternity", tagB:"Butterfly", sideNote:"the sky's only silver!",
-  badge:"SILVER EDITION", wordmark:"Silver Butterfly®",
-  desc:"A tiny silver butterfly that floats, glows and sheds dust as it goes. Model SB-01 · first drop 2026.", chip2:"SHINE IN THE DARK"
-};
-const LABELS = {
-  kicker:"맨 위 왼쪽", issue:"맨 위 가운데", date:"맨 위 오른쪽 날짜", title:"큰 제목", sub:"제목 오른쪽 작은 글",
-  tagA:"태그 글 1", tagB:"태그 글 2", sideNote:"태그 줄 오른쪽 한마디",
-  badge:"왼쪽 아래 작은 글", wordmark:"왼쪽 아래 큰 이름", desc:"왼쪽 아래 설명", chip2:"오른쪽 아래 글"
-};
-const DEF = {...TEXTS};   // 비웠을 때 자리를 유지하기 위한 기본 문구
-const STY = {};   // 글자별 크기 배율(m) / 자간(sp, px) / 볼드(b) / 기울임(i)
+const TEXTS = {kicker:"",issue:"",date:"",title:"",sub:"",tagA:"",tagB:"",sideNote:"",badge:"",wordmark:"",desc:"",chip2:""};
+const DEF = {kicker:"Eternity®",issue:"Vol.01",date:"2026.10.14",title:"Silver\nButterfly!",sub:"Wing / Dust",tagA:"Eternity",tagB:"Butterfly",sideNote:"the sky's only silver!",badge:"SILVER EDITION",wordmark:"Silver Butterfly®",desc:"A tiny silver butterfly.",chip2:"SHINE IN THE DARK"};
+const STY = {};
 const sty = k => { const s = STY[k] || (STY[k]={m:1,sp:0}); if(s.b==null) s.b = (k==="title"||k==="wordmark"); if(s.i==null) s.i = false; return s; };
 function rnd(x,y){ let h=(Math.imul(x,374761393)+Math.imul(y,668265263)+1274126177)|0; h=Math.imul(h^(h>>>13),1274126177); return ((h^(h>>>16))>>>0)/4294967296; }
-/* 왼쪽 아래 이름: 젖빛유리(픽셀 흩뿌리기) - 캔버스라 모바일 사파리에서도 동작 */
 function renderScatter(){
   const wc=document.getElementById("wc"), w=document.querySelector(".word"); if(!wc||!w) return;
   const fl=w.parentElement.getBoundingClientRect(), r=w.getBoundingClientRect(), cs=getComputedStyle(w);
@@ -201,7 +176,6 @@ function applyTexts(){
     const k=el.dataset.t; if(!(k in TEXTS)) return;
     const on = TEXTS[k].trim(); const txt = on ? TEXTS[k] : DEF[k];
     if(k==="issue"){
-      /* ( unlessfarewell ) : 괄호는 바로 서고, 영어만 기울임 */
       el.textContent="";
       const a=document.createElement("span"); a.className="pr"; a.textContent="(";
       const m=document.createElement("i"); m.textContent=txt;
@@ -214,75 +188,22 @@ function applyTexts(){
   });
   renderScatter();
 }
-
 const HOTSPOTS = [
-  { id:"wingL", label:"(1) info", side:-1, dy:-50,
-    html:`
-<div class="meta"><span>( <i>info</i> )</span></div>
-<div class="id-row"><span class="tag">Eternity</span> · 20⁺</div>
-<div class="id-row">ㄴ ♥  블랙배저 · <b>이예현</b></div>
-<div class="label">ACCOUNTS</div>
-<p class="ln">backup acc (@pesquaromance)</p>
-<hr>
-<p class="para"><span class="n">(1)</span> 반 이입 온리 동담 거부 성향으로 동장르 포함 상호 名1 필수로 요합니다 겹드림 자연 발생 시 친분 무관 제 쪽 팔로우 재고해 주세요 동담 발견 시 <b>사적 감정 일체 없는 B</b>로 대응하며 관련된 모든 종류의 컨택 받지 않습니다</p>
-<div class="id-row"><span class="tag">+ 캐릭터 특성상 아동 폭력과 같은 트리거 소재 언급이 존재할 가능성 있습니다</span></div>
-<p class="para"><span class="n">(2)</span> 강박적으로 멘션이나 트윗 삭제하곤 합니다 관련 행동에 악의는 전혀 존재하지 않아요 맞구독 형태의 맞팔로우 지향하며 교류 중요시 여기실 경우 연결 거부해요 또한 생각해 주시는 마음은 감사하나 마음 테러 내키지 않습니다</p>
-<p class="para"><span class="n">(3)</span> 논 커플링이 아닌 이예현 연성 유입하지 말아주세요 특히 화살표 구분없이 승현 → 윤 ← 예현 구조 동인 정말 싫어합니다⋯⋯ NL 성향으로 블랙배저 내 모든 캐릭터 디폴트 논 로맨스 최대 조합으로 소비해요 <span class="g">(이예현 CP 아니면 흐린 눈)</span></p>
-<p class="para"><span class="n">(4)</span> 개인 봇 언급 잦습니다 해당 문화에 부정적인 인식 가지고 있으실 경우 팔로우 X</p>
-    ` },
-  { id:"wingLo", label:"(2) caution", side:-1, dy:60,
-    html:`
-<div class="meta"><span>( <i>caution</i> )</span></div>
-<div class="id-row"><span class="tag">NG</span></div>
-<div class="two"><div><div class="label">CP</div><p class="ln">ㄴ 이예현 관련 모든 동인 커플링</p><p class="ln">ㄴ <b>윤예 및 예현른</b></p></div><div><div class="label">TIMELINE</div><p class="ln">ㄴ 잦은 수동공격</p><p class="ln">ㄴ 캐릭터 선점용 드림</p></div></div>
-<hr>
-<p class="para"><span class="n">(1)</span> 상기 내용 외에는 팔안굽 성향으로 보편적인 도덕 윤리를 위반하는 수준이 아닐 경우 대부분 흐린 눈 합니다 <b>그러나 반복될 경우 불시에 정리할 가능성 존재합니다</b></p>
-<p class="para"><span class="n">(2)</span> 별개로 AI 채팅 및 그림 소비러 내지는 이에 연관된 분과는 어떠한 이유가 있어도 연결하지 않습니다 추후에 숨기다 들키시면 블락으로 대응합니다</p>
-    ` },
-  { id:"wingR", label:"(3) 名1", side:1, dy:-40,
-    html:`
-<div class="meta"><span>( <i>名1</i>  )</span></div>
-<div class="id-row"><span class="tag">LIST</span> 상기 캐릭터 드림러 더 이상 받지 않으며 자연 발생 시 후발주자 FF 정리해요</div>
-<div class="label">NOTICE</div>
-<p class="ln"><span class="tag">배경</span> 캐릭터 발생 시 친분 무관 블락</p>
-<hr>
-<p class="ln"><b>블랙배저</b> · <b>최윤</b></p>
-<p class="ln"><b>마법명가 차남으로 살아남는 법 </b>· 아델베르트 호엔촐레른</p>
-<p class="ln"><b>괴담에 떨어져도 출근을 해야 하는구나</b> · 최 요원</p>
-<p class="ln"><b>망나니 PD 아이돌로 살아남기</b> · 서호윤</p>
-<p class="ln"><b>어린 신인데 키워주시죠</b> · 한고요</p>
-<p class="ln"><b>あんさんぶるスターズ！！</b>· 氷鷹 北斗</p>
-<p class="ln"><b>プロセカ</b> · 暁山 瑞希</p>
-    ` },
-  { id:"ant", label:"(4) fyi", side:1, dy:50,
-    html:`
-<div class="meta"><span>( <i>fyi</i>  )</span></div>
-<div class="id-row">좋아하는 것에 에너지를 쏟는 편이라 타임라인을 정독하기 어렵습니다 계옮이나 메인 드림 변경 시에는 직멘이나 디엠 필시적으로 부탁드립니다</div>
-<div class="id-row"><b>불특정 다수에게 노출될 만한 제 개인정보 공개적인 곳에서 언급하지 마세요</b></div>
-    ` }
+  {id:"wingL", label:"", side:-1, dy:-50, html:""},
+  {id:"wingLo", label:"", side:-1, dy:60, html:""},
+  {id:"wingR", label:"", side:1, dy:-40, html:""},
+  {id:"ant", label:"", side:1, dy:50, html:""}
 ];
-const DEFAULT_HS = HOTSPOTS.map(h=>({label:h.label, html:h.html}));
-
 const POSE = { yaw:-0.9, pitch:-0.2, roll:-0.45, fold:0.7 };
 const SHARD = { count: innerWidth<700 ? 42 : 72, wind:-0.42, minV:24, maxV:72 };
-/* 가루 조절값: soft = 가루 자체 흐림(px), blur = 가루 아래 그림자 번짐 배율, count = 개수 */
-const FX = { shade:.3, refl:.45, scat:14, grain:1.1, count:SHARD.count };   // scat=제목 젖빛유리 퍼짐, grain=알갱이 고움
-
-/* 저장된 편집 내용 불러오기 */
-const KEY = "silver-butterfly-edit-v1";
+const FX = { shade:.3, refl:.45, scat:14, grain:1.1, count:SHARD.count };
 try{
   const s = PRESET;
-  if(s){
-    Object.assign(TEXTS, s.TEXTS||{}); Object.assign(STY, s.STY||{}); Object.assign(FX, s.FX||{}); SHARD.count = FX.count;
-    (s.hs||[]).forEach((d,i)=>{ if(HOTSPOTS[i]){ HOTSPOTS[i].label=d.label; HOTSPOTS[i].html=d.html; } });
-  }
+  Object.assign(TEXTS, s.TEXTS||{}); Object.assign(STY, s.STY||{}); Object.assign(FX, s.FX||{}); SHARD.count = FX.count;
+  (s.hs||[]).forEach((d,i)=>{ if(HOTSPOTS[i]){ HOTSPOTS[i].label=d.label; HOTSPOTS[i].html=d.html; } });
 }catch(e){}
-function saveEdit(){
-  try{ localStorage.setItem(KEY, JSON.stringify({TEXTS, STY, FX, hs:HOTSPOTS.map(h=>({label:h.label, html:h.html}))})); }catch(e){}
-}
 applyTexts();
 
-/* ============ Three.js ============ */
 const canvas = document.getElementById("gl");
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
 renderer.setClearColor(0xffffff,0);
@@ -290,7 +211,6 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.08;
-
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(35,1,0.1,200);
 
@@ -335,16 +255,11 @@ function wingShape(kind,s){
     const T=(x,y)=>[X(.85*(x*c-y*n)), .85*(x*n+y*c)];
     const M=(x,y)=>sh.moveTo(...T(x,y)), L=(x,y)=>sh.lineTo(...T(x,y));
     const B=(a,b,c2,d,e,f)=>sh.bezierCurveTo(...T(a,b),...T(c2,d),...T(e,f));
-    M(0,0.05);
-    B(.3,1.2, 1.6,2.4, 3.1,2.85);
-    L(3.7,3.2);
-    L(3.5,2.45);
-    B(3.4,1.5, 3.0,.7, 2.2,.1);
-    B(1.5,-.2, .6,-.15, 0,0.05);
+    M(0,0.05); B(.3,1.2, 1.6,2.4, 3.1,2.85); L(3.7,3.2); L(3.5,2.45);
+    B(3.4,1.5, 3.0,.7, 2.2,.1); B(1.5,-.2, .6,-.15, 0,0.05);
   }
   return sh;
 }
-
 function wingTextures(kind){
   const pts = wingShape(kind,1).getPoints(90);
   let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
@@ -363,7 +278,6 @@ function wingTextures(kind){
   m.fillStyle=g1; m.fillRect(0,0,W,H);
   m.restore();
   const map = new THREE.CanvasTexture(mc); map.encoding = THREE.sRGBEncoding; map.anisotropy = 8;
-
   const NW=512, NH=Math.max(64,Math.round(NW*h/w)), sc=NW/W;
   const nc=document.createElement("canvas"); nc.width=NW; nc.height=NH;
   const nctx=nc.getContext("2d"), img=nctx.createImageData(NW,NH);
@@ -379,15 +293,12 @@ function wingTextures(kind){
   const normal = new THREE.CanvasTexture(nc); normal.anisotropy = 8;
   return {map, normal, minX, minY, w, h};
 }
-
 const silverMat = t => new THREE.MeshPhysicalMaterial({
   color:0xeaeaea, map:t.map, normalMap:t.normal, normalScale:new THREE.Vector2(1.5,1.5),
-  metalness:1, roughness:0.065, clearcoat:1, clearcoatRoughness:0.02,
-  envMapIntensity:2.7, side:THREE.DoubleSide
+  metalness:1, roughness:0.065, clearcoat:1, clearcoatRoughness:0.02, envMapIntensity:2.7, side:THREE.DoubleSide
 });
 const bodyMat = new THREE.MeshPhysicalMaterial({color:0xe7e7e7, metalness:1, roughness:0.09, clearcoat:1, clearcoatRoughness:0.02, envMapIntensity:2.6});
 const darkMat = new THREE.MeshStandardMaterial({color:0x5e5e5e, metalness:1, roughness:0.22, envMapIntensity:1.7});
-
 const texUp = wingTextures("upper"), texLo = wingTextures("lower");
 const geoCache = {}, matCache = {};
 function wingMesh(kind,s,tex){
@@ -402,7 +313,6 @@ function wingMesh(kind,s,tex){
   if(!matCache[kind]) matCache[kind] = silverMat(tex);
   return new THREE.Mesh(geoCache[k], matCache[kind]);
 }
-
 function makeButterfly(){
   const root = new THREE.Group(); root.rotation.order = "ZXY";
   const wR = new THREE.Group(), wL = new THREE.Group();
@@ -425,13 +335,11 @@ function makeButterfly(){
 const main = makeButterfly(); scene.add(main.root);
 const mir = makeButterfly();
 const mirrorRoot = new THREE.Group(); mirrorRoot.add(mir.root); scene.add(mirrorRoot);
-
 function setPose(b,rx,ry,t,a,py=0){
   b.root.rotation.set(POSE.pitch+rx, POSE.yaw+ry, POSE.roll+Math.sin(t*.6)*.03);
   b.root.position.y = py;
   b.wR.rotation.y = -a; b.wL.rotation.y = a;
 }
-
 let FLOOR_Y = 1e9, FLOOR_X = 0;
 (function findFloor(){
   const p = new THREE.Vector3();
@@ -450,8 +358,6 @@ let FLOOR_Y = 1e9, FLOOR_X = 0;
   mirrorRoot.scale.set(1,-1,1);
   mirrorRoot.position.y = 2*FLOOR_Y;
 })();
-
-/* 반사가 본체와 겹치지 않게: 매 프레임 본체의 가장 낮은 점을 재서 바닥 위로 띄움 */
 const lowPts = [], tv = new THREE.Vector3();
 (function(){
   const sp = new THREE.SphereGeometry(1,12,8).attributes.position;
@@ -468,12 +374,10 @@ function lowestY(){
   for(const [o,pts] of lowPts) for(const p of pts){ tv.copy(p).applyMatrix4(o.matrixWorld); if(tv.y<m) m=tv.y; }
   return m;
 }
-
 const anchor = (parent,x,y,z)=>{const o=new THREE.Object3D();o.position.set(x,y,z);parent.add(o);return o;};
 const anchors = { wingL:anchor(main.wL,-3.2,2.4,.1), wingLo:anchor(main.wL,-1.7,-2.2,.1),
                   wingR:anchor(main.wR,3.2,2.4,.1),  ant:anchor(main.body,.8,2.6,.1) };
 
-/* ============ 가루(파편) ============ */
 const shardCanvas = document.getElementById("shards"), sctx = shardCanvas.getContext("2d");
 let SW = 0, SH = 0, DPR = 1;
 const shards = [];
@@ -531,7 +435,6 @@ function stepShards(dt,t){
   }
 }
 
-/* ============ 오버레이(동그라미 + 선 + 버튼) ============ */
 const svg = document.getElementById("lines"), labelBox = document.getElementById("labels");
 const NS = "http://www.w3.org/2000/svg", R = 7;
 HOTSPOTS.forEach(h=>{
@@ -563,20 +466,19 @@ function updateOverlay(){
     h.btn.style.transform = `translate(${h.side>0?lx:lx-bw}px,${ly-h.btn.offsetHeight/2}px)`;
   });
 }
-
-/* ============ 팝업 ============ */
 const overlay = document.getElementById("overlay"), card = document.getElementById("card");
 function openPopup(h){
   card.innerHTML = `<button class="close" aria-label="닫기">×</button>` + h.html;
   card.dataset.id = h.id;
   card.querySelector(".close").onclick = closePopup;
   overlay.classList.add("open"); card.scrollTop = 0;
+  void card.offsetWidth;
+  card.querySelectorAll(".hl,.u").forEach(el=>{ el.style.animation="none"; void el.offsetWidth; el.style.animation=""; });
 }
 function closePopup(){ overlay.classList.remove("open"); }
 overlay.addEventListener("click",e=>{ if(e.target===overlay) closePopup(); });
 addEventListener("keydown",e=>{ if(e.key==="Escape") closePopup(); });
 
-/* ============ 드래그 회전 + 애니메이션 ============ */
 let dragging=false, lx0=0, ly0=0, rotY=0, rotX=0;
 canvas.addEventListener("pointerdown",e=>{dragging=true;lx0=e.clientX;ly0=e.clientY;canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener("pointermove",e=>{
@@ -585,7 +487,6 @@ canvas.addEventListener("pointermove",e=>{
   lx0=e.clientX; ly0=e.clientY;
 });
 ["pointerup","pointercancel"].forEach(t=>canvas.addEventListener(t,()=>dragging=false));
-
 function resize(){
   const w=innerWidth,h=innerHeight; renderer.setSize(w,h,false);
   camera.aspect=w/h;
@@ -603,7 +504,6 @@ function resize(){
   if(!shards.length && SHARD.count>0) initShards();
 }
 addEventListener("resize",resize); resize();
-
 let last = performance.now();
 const t0 = last;
 function tick(now){
@@ -612,7 +512,7 @@ function tick(now){
   if(!dragging){ rotY += (Math.sin(t*.45)*.22 - rotY)*.02; rotX += (0 - rotX)*.03; }
   const a = POSE.fold + Math.sin(t*1.7)*.2;
   setPose(main,rotX,rotY,t,a,0); main.root.updateMatrixWorld(true);
-  const py = FLOOR_Y + .12 + (Math.sin(t*1.1)+1)*.05 - lowestY();   // 가장 낮은 점이 항상 바닥보다 위
+  const py = FLOOR_Y + .12 + (Math.sin(t*1.1)+1)*.05 - lowestY();
   setPose(main,rotX,rotY,t,a,py); setPose(mir,rotX,rotY,t,a,py);
   glint1.position.set(Math.cos(t*.5)*7, 3+Math.sin(t*.7)*3, 6);
   glint2.position.set(-Math.cos(t*.4+2)*7, -1+Math.sin(t*.6)*2, 5);
@@ -622,28 +522,21 @@ function tick(now){
   requestAnimationFrame(tick);
 }
 requestAnimationFrame(tick);
-
 addEventListener("resize",renderScatter);
 if(document.fonts){ document.fonts.ready.then(renderScatter); document.fonts.addEventListener("loadingdone",renderScatter); }
-
 applyFX();
 
 /* ============ 배경음악 ============ */
-/* ▼▼▼ 아래 따옴표 안에 티스토리 mp3 링크를 붙여넣으세요 (https 로 시작) ▼▼▼ */
 const MUSIC_URL = "https://blog.kakaocdn.net/dna/08LD7/dJMcaa0V3NT/AAAAAAAAAAAAAAAAAAAAALxwwTtyZpZHDlFXixx5PMMZAxmc5Rpois7TwZzrGtWx/noname.mp3?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1793458799&allow_ip=&allow_referer=&signature=KiAINn0OTl%2B%2BJr3mik%2B1ZAihbdg%3D&attach=1&knm=tfile.mp3";
-/* ▲▲▲ ─────────────────────────────────────────────── ▲▲▲ */
 const bgm = new Audio(MUSIC_URL);
-bgm.loop = true;
-bgm.volume = 0.6;      // 0 ~ 1
-bgm.preload = "auto";
-
+bgm.loop = true; bgm.volume = 0.6; bgm.preload = "auto";
 function startBgm(){
   bgm.play().then(()=>{
     ["pointerdown","touchend","keydown"].forEach(t=>removeEventListener(t,startBgm,true));
-  }).catch(()=>{ /* 아직 막힘: 다음 터치 때 다시 시도 */ });
+  }).catch(()=>{});
 }
-startBgm();   // 접속하자마자 시도 (허용되는 환경이면 바로 재생)
-["pointerdown","touchend","keydown"].forEach(t=>addEventListener(t,startBgm,true));  // 막히면 첫 터치/클릭에 재생
+startBgm();
+["pointerdown","touchend","keydown"].forEach(t=>addEventListener(t,startBgm,true));
 </script>
 </body>
 </html>
