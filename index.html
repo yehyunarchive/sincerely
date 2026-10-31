@@ -399,9 +399,9 @@ const ORBIT_C = new THREE.Vector3(0,.6,0), _ov = new THREE.Vector3();
     color:0x8e96a0, transparent:true, opacity:.3, side:THREE.BackSide, depthWrite:false, toneMapped:false
   });
   const defs = [
-    {a:4.6, b:1.9, rx:.30,  rz:.28,  o:.5,  spin:.12,  pl:[{r:.13, sp:.55,  ph:0}]},
-    {a:5.4, b:2.3, rx:-.30, rz:-.28, o:.34, spin:-.08, pl:[{r:.10, sp:-.38, ph:1.2},{r:.07, sp:-.38, ph:4.3}]},
-    {a:6.2, b:2.7, rx:.05,  rz:0,    o:.26, spin:.15,  pl:[{r:.08, sp:.30,  ph:2.5}]}
+    {a:3.5, b:1.45, rx:.30,  rz:.28,  o:.5,  spin:.12,  pl:[{r:.13, sp:.55,  ph:0}]},
+    {a:4.1, b:1.75, rx:-.30, rz:-.28, o:.34, spin:-.08, pl:[{r:.10, sp:-.38, ph:1.2},{r:.07, sp:-.38, ph:4.3}]},
+    {a:4.7, b:2.05, rx:.05,  rz:0,    o:.26, spin:.15,  pl:[{r:.08, sp:.30,  ph:2.5}]}
   ];
   defs.forEach(d=>{
     const pts=[]; for(let i=0;i<180;i++){ const t=i/180*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(t)*d.a,0,Math.sin(t)*d.b)); }
