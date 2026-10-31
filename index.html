@@ -55,7 +55,7 @@
     transition:color .25s,border-color .25s}
   /* 테두리만 살짝 블러 (글자는 선명) */
   .hsbtn::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:1px solid rgba(170,170,170,.6);
-    filter:blur(.4px);pointer-events:none;transition:border-color .25s}
+    pointer-events:none;transition:border-color .25s}
   .hsbtn:hover,.hsbtn:focus-visible{color:#555;background:rgba(255,255,255,.5);outline:none}
   .hsbtn:hover::before,.hsbtn:focus-visible::before{border-color:rgba(130,130,130,.75)}
   .top,.foot{position:fixed;z-index:0;left:50%;transform:translateX(-50%);width:min(720px,calc(100% - 44px));pointer-events:none;color:#5b5b5b;font-weight:500}
